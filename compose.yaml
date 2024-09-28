@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Application service
+  server:
+    image: 905418211630.dkr.ecr.ca-central-1.amazonaws.com/clouddevops/node-app
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Amit100937637 # First name + student number
+      POSTGRES_DB: labonedb
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # PostgreSQL Database service
+  db:
+    image: postgres:13
+    user: postgres  # 1. Set user to postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data  # 2. Create a volume and map the path
+    environment:
+      POSTGRES_DB: labonedb  # 3. Set environment variables
+      POSTGRES_PASSWORD: Amit100937637
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"  # 4. Expose port 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]  # 5. Set health check
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:  # 6. Add the db-data volume
